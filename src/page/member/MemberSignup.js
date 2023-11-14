@@ -1,8 +1,9 @@
 import {
-  Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Input
+  Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, useToast
 } from "@chakra-ui/react";
 import React, {useState} from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 export function MemberSignup() {
 
@@ -12,6 +13,9 @@ export function MemberSignup() {
   const [email, setEmail] = useState("");
 
   const [idAvailable, setIdAvailable] = useState(false);
+
+  const toast = useToast();
+  const navigate = useNavigate();
 
 // 아무것도 기입안된 처음 로그인 상태에선 가입버튼을 비활성화시켜보자
   let submitAvailable = true;
@@ -34,8 +38,8 @@ export function MemberSignup() {
     .catch(() => console.log('bad'))
     .finally(
         () => console.log('done'));
-
   };
+
 
   function handleIdCheck() {
     const searchParam = new URLSearchParams();
@@ -45,10 +49,18 @@ export function MemberSignup() {
     .get("/api/member/check?" + searchParam.toString())
     .then(()=> {
       setIdAvailable(false);
+      toast({
+        description: "이미 사용 중인 ID입니다",
+        status: "warning"
+      })
     })
     .catch((error)=> {
       if (error.response.status === 404) {
         setIdAvailable(true);
+        toast({
+          description: '사용 가능한 ID입니다',
+          status: 'success'
+        })
       }
     })
     // URL 에서 숫자가 아닌 querystring은 그냥붙이면 엔코딩이 되기때문에
