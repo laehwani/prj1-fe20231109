@@ -29,6 +29,13 @@ export function BoardEdit() {
     return <Spinner/>;
   }
 
+  const handleSave = () => {
+
+    // 저장 버튼 클릭 시
+    // PUT /api/board/edit
+    axios.put("/api/board/edit", board).then(() => console.log('잘됨')).catch(
+        () => console.log('잘 안됨')).finally(() => console.log('끝!'))
+  };
   return (<div>
     <Box>
       <h1>
@@ -57,7 +64,7 @@ export function BoardEdit() {
             });
           }}/>
         </FormControl>
-        <Button colorScheme={'yellow'}>저장</Button>
+        <Button colorScheme={'yellow'} onClick={handleSave}>저장</Button>
 
         {/*navigate(-1) : 이전 경로로 이동, (-2) : 이전이전의 경로로 이동 */}
         {/*navigate(+1) : 앞으로 이동*/}
