@@ -13,6 +13,7 @@ export function MemberSignup() {
   const [email, setEmail] = useState("");
 
   const [idAvailable, setIdAvailable] = useState(false);
+  const [emailAvailable, setEmailAvailable] = useState(false);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -26,6 +27,10 @@ export function MemberSignup() {
     submitAvailable = false;
   }
   if (password.length === 0) {
+    submitAvailable = false;
+  }
+
+  if (!emailAvailable) {
     submitAvailable = false;
   }
 
@@ -67,6 +72,30 @@ export function MemberSignup() {
     // urlsearchparams 를 써서 string파라미터값을 추출해야함
   }
 
+  function handleEmailCheck() {
+    const searchParam = new URLSearchParams();
+    searchParam.set("email", email);
+
+    axios
+    .get("/api/member/check?" + searchParam.toString())
+    .then(()=> {
+      setEmailAvailable(false);
+      toast({
+        description: "이미 사용 중인 Email 입니다",
+        status: "warning"
+      })
+    })
+    .catch((error)=> {
+      if (error.response.status === 404) {
+        setEmailAvailable(true);
+        toast({
+          description: '사용 가능한 Email 입니다',
+          status: 'success'
+        })
+      }
+    })
+  }
+
   return (<div>
     <Box>
       <h1>회원 가입</h1>
@@ -93,10 +122,17 @@ export function MemberSignup() {
                onChange={(e) => setPasswordCheck(e.target.value)}/>
         <FormErrorMessage>암호가 다릅니다.</FormErrorMessage>
       </FormControl>
-      <FormControl>
+      <FormControl isInvalid={!emailAvailable}>
         <FormLabel>email</FormLabel>
-        <Input type="email" value={email}
-               onChange={(e) => setEmail(e.target.value)}/>
+        <Flex>
+          <Input type="email" value={email}
+                 onChange={(e) => {
+                   setEmail(e.target.value);
+                   setEmailAvailable(false);
+                 }}/>
+          <Button onClick={handleEmailCheck}>중복확인</Button>
+        </Flex>
+        <FormErrorMessage>email 중복 체크를 해주세요!</FormErrorMessage>
       </FormControl>
       <Button onClick={handleSubmit} colorScheme="blue"
               isDisabled={!submitAvailable}>가입</Button>
