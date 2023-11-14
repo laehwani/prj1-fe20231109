@@ -1,9 +1,9 @@
-import {memo, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Box, Spinner, Table, Tbody, Td, Th, Thead, Tr} from "@chakra-ui/react";
 import axios from "axios";
 
 export function MemberList() {
-  const [list, setList] = useState("");
+  const [list, setList] = useState(null);
   useEffect(() => {
     axios.get("/api/member/list")
     .then(r=> setList(r.data))
@@ -20,14 +20,16 @@ export function MemberList() {
             <Th>id</Th>
             <Th>pw</Th>
             <Th>email</Th>
+            <Th>가입일시</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {list.map(member =>
-              <Tr key={member.id}></Tr>)}
-          <Td>{member.id}</Td>
-          <Td>{member.password}</Td>
-          <Td>{member.email}</Td>
+          {list.map((member) => (<Tr key={member.id}>
+                <Td>{member.id}</Td>
+                <Td>{member.password}</Td>
+                <Td>{member.email}</Td>
+                <Td>{member.inserted}</Td>
+              </Tr>))}
         </Tbody>
       </Table>
     </Box>
