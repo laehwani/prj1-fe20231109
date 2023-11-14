@@ -48,14 +48,15 @@ export function BoardEdit() {
     // PUT /api/board/edit
     axios
     .put("/api/board/edit", board)
-    .then(() => {toast({
-      description: board.id +'번 게시글이 수정되었습니다!',
-      status: 'success'
-    })
+    .then(() => {
+      toast({
+        description: board.id + "번 게시글이 수정되었습니다",
+        status: "success",
+      })
       navigate("/board/"+id);
     })
     .catch((error) => {
-      if (error.response.data === 400) {
+      if (error.response.status === 400) {
         toast({
           description: "요청이 잘못되었습니다.수정내용을 다시 확인해주세요!",
           status: "error",
