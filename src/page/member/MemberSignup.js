@@ -39,8 +39,26 @@ export function MemberSignup() {
     .post("/api/member/signup", {
       id, password, email,
     })
-    .then(() => console.log("good"))
-    .catch(() => console.log('bad'))
+    .then(() => {
+      toast({
+        description: "회원가입이 완료되었습니다!",
+        status: "success"
+      })
+      navigate("/");
+    })
+    .catch((error) => {
+      if (error.response.status === 400) {
+        toast({
+          description: '잘못된 정보를 입력하셨습니다. 다시 확인해주세요.',
+          status : 'error',
+        });
+      } else {
+        toast({
+          description: "가입중에 오류가 발생하였습니다!",
+          status: 'error'
+        });
+      }
+    })
     .finally(
         () => console.log('done'));
   };
