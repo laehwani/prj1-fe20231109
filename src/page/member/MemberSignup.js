@@ -1,9 +1,5 @@
 import {
-  Box,
-  Button,
-  FormControl, FormErrorMessage,
-  FormLabel,
-  Input
+  Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Input
 } from "@chakra-ui/react";
 import React, {useState} from "react";
 import axios from "axios";
@@ -15,8 +11,13 @@ export function MemberSignup() {
   const [passwordCheck, setPasswordCheck] = useState("");
   const [email, setEmail] = useState("");
 
+  const [idAvailable, setIdAvailable] = useState(false);
+
 // 아무것도 기입안된 처음 로그인 상태에선 가입버튼을 비활성화시켜보자
   let submitAvailable = true;
+  if (!idAvailable) {
+    submitAvailable = false;
+  }
   if (password !== passwordCheck) {
     submitAvailable = false;
   }
@@ -35,12 +36,38 @@ export function MemberSignup() {
         () => console.log('done'));
 
   };
+
+  function handleIdCheck() {
+    const searchParam = new URLSearchParams();
+    searchParam.set("id", id);
+
+    axios
+    .get("/api/member/check?" + searchParam.toString())
+    .then(()=> {
+      setIdAvailable(false);
+    })
+    .catch((error)=> {
+      if (error.response.status === 404) {
+        setIdAvailable(true);
+      }
+    })
+    // URL 에서 숫자가 아닌 querystring은 그냥붙이면 엔코딩이 되기때문에
+    // urlsearchparams 를 써서 string파라미터값을 추출해야함
+  }
+
   return (<div>
     <Box>
       <h1>회원 가입</h1>
-      <FormControl>
+      <FormControl isInvalid={!idAvailable}>
         <FormLabel>id</FormLabel>
-        <Input value={id} onChange={(e) => setId(e.target.value)}/>
+        <Flex>
+          <Input value={id} onChange={(e) => {
+            setId(e.target.value);
+            setIdAvailable(false);
+          }}/>
+          <Button onClick={handleIdCheck}>중복확인</Button>
+        </Flex>
+        <FormErrorMessage>ID 중복체크를 해주세요!.</FormErrorMessage>
       </FormControl>
       <FormControl isInvalid={password.length === 0}>
         <FormLabel>password</FormLabel>
