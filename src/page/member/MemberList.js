@@ -3,13 +3,13 @@ import {Box, Spinner, Table, Tbody, Td, Th, Thead, Tr} from "@chakra-ui/react";
 import axios from "axios";
 
 export function MemberList() {
-  const [list, setList] = useState(null);
+  const [list, setList] = useState("");
   useEffect(() => {
     axios.get("/api/member/list")
     .then(r=> setList(r.data))
   }, []);
 
-  if (list === null) {
+  if (list === "") {
     return <Spinner/>
   }
   return (<div>
