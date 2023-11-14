@@ -1,9 +1,5 @@
 import {
-  Box, Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Spinner
+  Box, Button, FormControl, FormLabel, Input, Spinner, useToast
 } from "@chakra-ui/react";
 import React, {useEffect} from "react";
 import {useNavigate, useParams} from "react-router-dom";
@@ -19,6 +15,8 @@ export function BoardEdit() {
 
   const navigate = useNavigate();
 
+  const toast = useToast();
+
   useEffect(() => {
     axios
     .get("/api/board/id/" + id)
@@ -33,8 +31,27 @@ export function BoardEdit() {
 
     // 저장 버튼 클릭 시
     // PUT /api/board/edit
-    axios.put("/api/board/edit", board).then(() => console.log('잘됨')).catch(
-        () => console.log('잘 안됨')).finally(() => console.log('끝!'))
+    axios
+    .put("/api/board/edit", board)
+    .then(() => {toast({
+      description: board.id +'번 게시글이 수정되었습니다!',
+      status: 'success'
+    })
+      navigate("/board/"+id);
+    })
+    .catch((error) => {
+      if (error.response.data === 400) {
+        toast({
+          description: "요청이 잘못되었습니다. 수정내용을 다시 확인해주세요!", status: 'error',
+        })
+      }
+      else {
+        toast({
+          description: "수정 중에 문제가 발생하였습니다.", status: 'error',
+        });
+      }
+    })
+    .finally(() => console.log('끝!'))
   };
   return (<div>
     <Box>
