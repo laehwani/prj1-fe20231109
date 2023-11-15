@@ -1,8 +1,22 @@
 import {
-  Box, Button, Flex, FormControl, FormLabel, Input, Spinner, useToast
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spinner, useDisclosure,
+  useToast
 } from "@chakra-ui/react";
 import React, {useEffect, useState} from "react";
-import {useSearchParams} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import axios from "axios";
 
 export function MemberEdit() {
@@ -15,6 +29,8 @@ export function MemberEdit() {
 
   const [params] = useSearchParams();
   const toast = useToast();
+  const navigate = useNavigate();
+  const {isOpen, onOpen, onClose} = useDisclosure();
 
   useEffect(() => {
     axios.get("/api/member?" + params.toString()).then(
@@ -77,9 +93,22 @@ export function MemberEdit() {
     // put /api/member/edit
     // {id, password, email}
 
-    axios
-    .put("/api/member/edit", {id: member.id, password, email})
-
+    axios.put("/api/member/edit", {id: member.id, password, email}).then(() => {
+      toast({
+        description: "회원정보가 수정되었습니다", status: "success"
+      });
+      navigate("/member?" + params.toString());
+    }).catch((error) => {
+      if (error.response.status === 401 || error.response.status === 403) {
+        toast({
+          description: '수정권한이 없습니다', status: 'error'
+        });
+      } else {
+        toast({
+          description: '수정중에 문제가 발생하였습니다', status: 'error'
+        });
+      }
+    }).finally(()=> onClose());
   }
 
   return (<div>
@@ -113,7 +142,22 @@ export function MemberEdit() {
         </Flex>
       </FormControl>
       <Button isDisabled={!emailChecked || !passwordChecked} colorScheme="blue"
-              onClick={handleSubmit}>수정</Button>
+              onClick={onOpen}>수정</Button>
+
+      {/*수정 모달*/}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay/>
+        <ModalContent>
+          <ModalHeader>수정 확인</ModalHeader>
+          <ModalCloseButton/>
+          <ModalBody>수정 하시겠습니까?</ModalBody>
+          <ModalFooter>
+            <Button onClick={onClose}>닫기</Button>
+            <Button onClick={handleSubmit} colorScheme="orange">수정하기
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   </div>);
 }
