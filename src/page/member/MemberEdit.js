@@ -9,6 +9,8 @@ export function MemberEdit() {
 
   const [member, setMember] = useState(null);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordCheck, setPasswordCheck] = useState("");
   const [emailAvailable, setEmailAvailable] = useState(false);
 
   const [params] = useSearchParams();
@@ -32,8 +34,19 @@ export function MemberEdit() {
   // TODO: 기존 이메일과 같거나, 중복확인을 했거나
   let emailChecked = sameOriginEmail || emailAvailable;
 
+  // 암호가 없으면 기존 암호
+  // 암호를 작성하면 새 암호, 암호확인 체크
+  let passwordChecked = false;
+
+  if (passwordCheck === password) {
+    passwordChecked = true;
+  }
+  if (password.length === 0) {
+    passwordChecked = true;
+  }
+
   if (member === null) {
-    return <Spinner/>
+    return <Spinner/>;
   }
 
   function handleEmailCheck() {
@@ -41,13 +54,13 @@ export function MemberEdit() {
       searchParam.set("email", email);
 
       axios
-      .get("/api/member/check?" + searchParam.toString())
+      .get("/api/member/check?" + searchParam)
       .then(()=> {
         setEmailAvailable(false);
         toast({
           description: "이미 사용 중인 Email 입니다",
           status: "warning"
-        })
+        });
       })
       .catch((error)=> {
         if (error.response.status === 404) {
@@ -56,7 +69,7 @@ export function MemberEdit() {
             description: '사용 가능한 Email 입니다', status: 'success'
           });
         }
-      })
+      });
   }
 
   return (<div>
@@ -64,8 +77,19 @@ export function MemberEdit() {
       <h1>{id}님 정보 수정</h1>
       <FormControl>
         <FormLabel>password</FormLabel>
-        <Input type="text"></Input>
+        <Input type="text" value={password}
+               onChange={
+                 (e) => setPassword(e.target.value)}></Input>
       </FormControl>
+
+      {password.length > 0 && (
+          <FormControl>
+        <FormLabel>password 확인</FormLabel>
+        <Input type="text"
+               value={passwordCheck}
+               onChange={(e) => setPasswordCheck(e.target.value)}></Input>
+      </FormControl>
+      )}
 
       {/*email 을 변경하면(작성시작) 중복확인 다시 하도록*/}
       {/*기존 email 과 같으면 중복확인 안해도 되게 해보자*/}
@@ -77,9 +101,11 @@ export function MemberEdit() {
                    setEmail(e.target.value);
                    setEmailAvailable(false);
                  }}></Input>
-          <Button isDisabled={emailChecked} onClick={handleEmailCheck}>중복확인</Button>
+          <Button isDisabled={emailChecked}
+                  onClick={handleEmailCheck}>중복확인</Button>
         </Flex>
       </FormControl>
+      <Button isDisabled={!emailChecked || !passwordChecked}>수정</Button>
     </Box>
   </div>);
 }
