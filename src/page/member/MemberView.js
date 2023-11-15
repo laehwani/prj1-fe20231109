@@ -1,13 +1,40 @@
 import {useSearchParams} from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {
+  Box, Button, FormControl, FormLabel, Input, Spinner
+} from "@chakra-ui/react";
+import axios from "axios";
 
 export function MemberView() {
-  // /member?id=userid
 
+  const [member, setMember] = useState(null);
+
+  // /member?id=userid
   const [params] = useSearchParams();
 
-  return (
-      <div>
-        {params.get('id')}님 회원 정보 보기
-      </div>
-  );
+  useEffect(() => {
+    axios
+    .get("/api/member?"+ params.toString())
+    .then(r => setMember(r.data))
+  }, []);
+
+  if (member === null) {
+    return <Spinner/>;
+  }
+
+  return (<div>
+        <Box>
+          <h1>{member.id}님 정보</h1>
+          <FormControl>
+            <FormLabel>password</FormLabel>
+            <Input type="text" value={member.password} readOnly></Input>
+          </FormControl>
+          <FormControl>
+            <FormLabel>email</FormLabel>
+            <Input value={member.email} readOnly></Input>
+          </FormControl>
+          <Button colorScheme="purple">수정</Button>
+          <Button colorScheme="red">삭제</Button>
+        </Box>
+      </div>);
 }
