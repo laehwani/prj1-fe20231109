@@ -72,24 +72,31 @@ export function MemberEdit() {
       });
   }
 
+  function handleSubmit() {
+    // 항상 업데이트할때 주로 쓰이는건 put 방식이다
+    // put /api/member/edit
+    // {id, password, email}
+
+    axios
+    .put("/api/member/edit", {id: member.id, password, email})
+
+  }
+
   return (<div>
     <Box>
       <h1>{id}님 정보 수정</h1>
       <FormControl>
         <FormLabel>password</FormLabel>
         <Input type="text" value={password}
-               onChange={
-                 (e) => setPassword(e.target.value)}></Input>
+               onChange={(e) => setPassword(e.target.value)}></Input>
       </FormControl>
 
-      {password.length > 0 && (
-          <FormControl>
-        <FormLabel>password 확인</FormLabel>
-        <Input type="text"
-               value={passwordCheck}
-               onChange={(e) => setPasswordCheck(e.target.value)}></Input>
-      </FormControl>
-      )}
+      {password.length > 0 && (<FormControl>
+            <FormLabel>password 확인</FormLabel>
+            <Input type="text"
+                   value={passwordCheck}
+                   onChange={(e) => setPasswordCheck(e.target.value)}></Input>
+          </FormControl>)}
 
       {/*email 을 변경하면(작성시작) 중복확인 다시 하도록*/}
       {/*기존 email 과 같으면 중복확인 안해도 되게 해보자*/}
@@ -105,7 +112,8 @@ export function MemberEdit() {
                   onClick={handleEmailCheck}>중복확인</Button>
         </Flex>
       </FormControl>
-      <Button isDisabled={!emailChecked || !passwordChecked}>수정</Button>
+      <Button isDisabled={!emailChecked || !passwordChecked} colorScheme="blue"
+              onClick={handleSubmit}>수정</Button>
     </Box>
   </div>);
 }
