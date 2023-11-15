@@ -36,7 +36,7 @@ export function MemberList() {
           </Tr>
         </Thead>
         <Tbody>
-          {list.map((member) => (<Tr onClick={()=>handleRowClick(member.id)} key={member.id}>
+          {list.map((member) => (<Tr _hover={{cursor:'pointer'}} onClick={()=>handleRowClick(member.id)} key={member.id}>
                 <Td>{member.id}</Td>
                 <Td>{member.password}</Td>
                 <Td>{member.email}</Td>
