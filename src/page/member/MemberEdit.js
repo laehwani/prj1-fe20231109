@@ -93,6 +93,7 @@ export function MemberEdit() {
     // put /api/member/edit
     // {id, password, email}
 
+
     axios.put("/api/member/edit", {id: member.id, password, email}).then(() => {
       toast({
         description: "회원정보가 수정되었습니다", status: "success"
@@ -108,7 +109,7 @@ export function MemberEdit() {
           description: '수정중에 문제가 발생하였습니다', status: 'error'
         });
       }
-    }).finally(()=> onClose());
+    }).finally(() => onClose());
   }
 
   return (<div>
