@@ -81,11 +81,15 @@ export function MemberView() {
         <Input type="text" value={member.password} readOnly></Input>
       </FormControl>
       <FormControl>
+        <FormLabel>별명</FormLabel>
+        <Input value={member.nickName} readOnly></Input>
+      </FormControl>
+      <FormControl>
         <FormLabel>email</FormLabel>
         <Input value={member.email} readOnly></Input>
       </FormControl>
-      <Button colorScheme="purple" onClick={() => navigate("/member/edit?" +
-          params.toString())}>수정</Button>
+      <Button colorScheme="purple" onClick={() => navigate(
+          "/member/edit?" + params.toString())}>수정</Button>
       <Button colorScheme="red" onClick={onOpen}>탈퇴</Button>
 
       {/*탈퇴 모달*/}
