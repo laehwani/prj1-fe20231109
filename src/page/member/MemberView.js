@@ -14,7 +14,8 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
-  useDisclosure, useToast
+  useDisclosure,
+  useToast
 } from "@chakra-ui/react";
 import axios from "axios";
 
@@ -36,6 +37,13 @@ export function MemberView() {
     axios
     .get("/api/member?"+ params.toString())
     .then(r => setMember(r.data))
+    .catch((error) => {
+      navigate("/login")
+      toast({
+        description: '권한이 없습니다!',
+        status: 'warning',
+      });
+    })
   }, []);
 
   if (member === null) {
