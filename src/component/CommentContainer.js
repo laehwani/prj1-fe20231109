@@ -31,6 +31,8 @@ function CommentList({boardID}) {
 
     axios
     .get("/api/comment/list?"+ params)
+    // TODO: urlsearchparams 로 url정보를 스트링화할때 + 가 왼쪽,오른쪽을
+    // 모두 string으로 바꿔주기에 toString 을 안붙여도 된다..
     .then(r=> setCommentList(r.data.value))
   }, []);
   return (<div>
