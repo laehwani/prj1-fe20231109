@@ -90,14 +90,6 @@ export function BoardEdit() {
           });
         }}/>
       </FormControl>
-      <FormControl>
-        <FormLabel>작성자</FormLabel>
-        <Input value={board.writer} onChange={e => {
-          updateBoard((draft) => {
-            draft.writer = e.target.value
-          });
-        }}/>
-      </FormControl>
       <Button colorScheme={'yellow'} onClick={onOpen}>저장</Button>
 
       {/*navigate(-1) : 이전 경로로 이동, (-2) : 이전이전의 경로로 이동 */}
@@ -111,7 +103,6 @@ export function BoardEdit() {
           <ModalHeader>저장 확인</ModalHeader>
           <ModalCloseButton/>
           <ModalBody>저장 하시겠습니까?</ModalBody>
-
           <ModalFooter>
             <Button onClick={handleSave} colorScheme="blue">
               저장
