@@ -41,15 +41,16 @@ function App(props) {
   function isAuthenticated() {
     return login !== "";
   }
-
+  function hasAccess(userId) {
+    return login.id === userId;
+  }
   useEffect(() => {
     fetchLogin()
   }, []);
 
-  console.log(login);
 
   return (
-  < LoginContext.Provider value={{login, fetchLogin, isAuthenticated}}>
+  < LoginContext.Provider value={{login, fetchLogin, isAuthenticated, hasAccess}}>
     <RouterProvider router={routes}/>;
   </LoginContext.Provider>);
 }
