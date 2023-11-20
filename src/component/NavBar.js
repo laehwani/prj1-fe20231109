@@ -27,13 +27,18 @@ export function NavBar() {
   }
 
   return (<div>
-        <Flex>
-          <Button onClick={() => navigate("/")}>Home</Button>
-          <Button onClick={() => navigate("/write")}>Write</Button>
-          <Button onClick={() => navigate("/signup")}>SignUp</Button>
-          <Button onClick={() => navigate("/member/list")}>MemberList</Button>
-          <Button onClick={() => navigate("/login")}>로그인</Button>
-          <Button onClick={handleLogout}>로그아웃</Button>
-        </Flex>
-      </div>);
+    <Flex>
+      <Button onClick={() => navigate("/")}>Home</Button>
+      {isAuthenticated() &&
+          (<Button onClick={() => navigate("/write")}>Write</Button>)}
+      {isAuthenticated() ||
+          (<Button onClick={() => navigate("/signup")}>SignUp</Button>)}
+      {isAuthenticated() && (
+          <Button onClick={() => navigate("/member/list")}>MemberList</Button>)}
+      {isAuthenticated() ||
+          (<Button onClick={() => navigate("/login")}>로그인</Button>)}
+      {isAuthenticated() && (<Button onClick={handleLogout}>로그아웃</Button>)}
+
+    </Flex>
+  </div>);
 }
