@@ -1,15 +1,29 @@
-import { Button, Flex } from "@chakra-ui/react";
+import {Button, Flex, useToast} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import {useContext} from "react";
+import {LoginContext} from "../App";
 
 export function NavBar() {
+
+  // TODO: 아래 작업들을 계속 하는 이유는 세션은 서버에 있고, 바깥에 있는 클라이언트가
+  //  로그인에 있는 정보들을 받아와야 하기 때문이다. 이런면에선 jsp 가 훨씬 편리하다.
+
+  const {fetchLogin, login, isAuthenticated} = useContext(LoginContext)
   const navigate = useNavigate();
+  const toast = useToast();
 
   function handleLogout() {
     axios
     .post("/api/member/logout")
-    .then(() => console.log('로그아웃 성공'))
-
+    .then(() => {
+      toast({
+        description: '로그아웃 되었습니다.',
+        status: 'info'
+      });
+      navigate("/");
+    })
+    .finally(()=> fetchLogin());
   }
 
   return (<div>
