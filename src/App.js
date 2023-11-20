@@ -41,6 +41,18 @@ function App(props) {
   function isAuthenticated() {
     return login !== "";
   }
+
+  function isAdmin() {
+    if (login.auth) {
+      return login.auth.some((elem) => elem.name === "admin");
+    }
+    return false;
+  }
+  // function isManager() {
+  //   login.auth.some((elem) => elem.name === "manager")
+  // }
+  // TODO: 선생님은 안하시기에 나중에 꺼내씀.
+
   function hasAccess(userId) {
     return login.id === userId;
   }
@@ -48,9 +60,10 @@ function App(props) {
     fetchLogin()
   }, []);
 
+  console.log(login);
 
   return (
-  < LoginContext.Provider value={{login, fetchLogin, isAuthenticated, hasAccess}}>
+  < LoginContext.Provider value={{login, fetchLogin, isAuthenticated, hasAccess, isAdmin}}>
     <RouterProvider router={routes}/>;
   </LoginContext.Provider>);
 }
