@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import React, {useContext, useEffect, useState} from "react";
 import axios from "axios";
 import {
@@ -18,7 +18,8 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import {LoginContext} from "../../App";
+import {LoginContext} from "../../component/LogInProvider";
+import {CommentContainer} from "../../component/CommentContainer";
 
 export function BoardView() {
   const { id } = useParams();
@@ -101,5 +102,6 @@ export function BoardView() {
         </ModalFooter>
       </ModalContent>
     </Modal>
+    <CommentContainer boardId={id}/>
   </Box>);
 }
