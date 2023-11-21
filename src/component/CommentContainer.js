@@ -32,13 +32,7 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
   );
 }
 
-function CommentList({ commentList }) {
-
-  function handleDelete(id) {
-
-    // TODO : then, catch, finally 넣어야댐. 백엔드부터 하겟음.
-    axios.delete("/api/comment/" + id);
-  }
+function CommentList({ commentList, onDelete, isSubmitting}) {
 
   return (<Card>
         <CardHeader>
@@ -57,8 +51,10 @@ function CommentList({ commentList }) {
 
                       {comment.comment}
                     </Text>
-                    <Button size='xs' colorScheme="green"
-                            onClick={()=> handleDelete(comment.id)}>
+                    <Button size='xs'
+                            colorScheme="green"
+                            onClick={()=> onDelete(comment.id)}
+                            isDisabled={isSubmitting}>
                       <DeleteIcon/>
                     </Button>
                   </Flex>
@@ -74,7 +70,6 @@ export function CommentContainer({ boardId }) {
   const [commentList, setCommentList] = useState([]);
 
   useEffect(() => {
-
     if (!isSubmitting) {
       const params = new URLSearchParams();
       params.set("id", boardId);
@@ -95,14 +90,27 @@ export function CommentContainer({ boardId }) {
     .finally(() => setIsSubmitting(false));
   }
 
-  return (
-      <Box>
+  // TODO: 지우는 중간에 submitting 상태를 변경시켜주기 위해 handleDelete를 컨테이너로 옮겼음.
+  //  useEffect 가 submitting 상태에 따라서 변경되게 하기 위해..
+  function handleDelete(id) {
+    // TODO : 모달, then, catch, finally 넣어야댐.
+
+    setIsSubmitting(true);
+    axios
+    .delete("/api/comment/" + id)
+    .finally(() => setIsSubmitting(false));
+    // 위에 코드로 issubmitting 이 바뀌면서 useEffect 가 트리거하게 된다.
+  }
+
+  return (<Box>
         <CommentForm
             boardId={boardId}
             isSubmitting={isSubmitting}
             onSubmit={handleSubmit}
         />
-        <CommentList boardId={boardId} commentList={commentList}/>
-      </Box>
-  );
+        <CommentList boardId={boardId}
+                     isSubmitting={isSubmitting}
+                     commentList={commentList}
+                     onDelete={handleDelete}/>
+      </Box>);
 }
