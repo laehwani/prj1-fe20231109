@@ -65,16 +65,19 @@ export function MemberView() {
       navigate("/");
 
       // TODO: 로그아웃 기능 추가하기
+
       // FIXME: 이 기능 고치기
 
     }).catch((error) => {
       if (error.response.status === 401 || error.response.status === 403) {
         toast({
-          description: '권한이 없습니다', status: 'error'
+          description: '권한이 없습니다',
+          status: 'error'
         });
       } else {
         toast({
-          description: '탈퇴 처리 중에 문제가 발생하였습니다', status: 'error'
+          description: '탈퇴 처리 중에 문제가 발생하였습니다',
+          status: 'error'
         });
       }
     })

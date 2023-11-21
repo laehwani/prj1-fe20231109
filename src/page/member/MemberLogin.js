@@ -19,20 +19,18 @@ export function MemberLogin() {
     // TODO : 로그인 후 성공,실패,완료 코드 추가해야함.
     axios
     .post("/api/member/login", {id, password})
-    .then(() =>
-        toast({
-          description: '로그인 되었어요',
-          status: 'info'
-        }))
+    .then(() => {
+      toast({
+        description: '로그인 되었어요', status: 'info'
+      });
+      navigate("/");
+    })
     .catch(() => {
       toast({
         description: '아이디와 암호를 다시 확인해주세요.',
         status: "warning"
-      })
+      });
     })
-    .finally(() => {
-      fetchLogin();
-    });
   }
 
   return (<div>
