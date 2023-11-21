@@ -19,9 +19,10 @@ import {
   Textarea,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import axios from "axios";
 import {DeleteIcon} from "@chakra-ui/icons";
+import {LoginContext} from "./LogInProvider";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
   const [comment, setComment] = useState("");
@@ -42,6 +43,8 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
 
 function CommentList({ commentList, onDeleteModalOpen, isSubmitting}) {
 
+  const {isAuthenticated, hasAccess} = useContext(LoginContext);
+
   return (<Card>
     <CardHeader>
       <Heading size="md">댓글 리스트</Heading>
@@ -59,12 +62,14 @@ function CommentList({ commentList, onDeleteModalOpen, isSubmitting}) {
 
               {comment.comment}
             </Text>
-            <Button size='xs'
-                    colorScheme="green"
-                    onClick={()=> onDeleteModalOpen(comment.id)}
-                    isDisabled={isSubmitting}>
-              <DeleteIcon/>
-            </Button>
+            {hasAccess(comment.memberId) && (
+                <Button size='xs'
+                        colorScheme="green"
+                        onClick={()=> onDeleteModalOpen(comment.id)}
+                        isDisabled={isSubmitting}>
+                  <DeleteIcon/>
+                </Button>
+            )}
           </Flex>
         </Box>))}
       </Stack>
@@ -83,6 +88,8 @@ export function CommentContainer({ boardId }) {
     onClose,
     onOpen,
   } = useDisclosure();
+
+  const {isAuthenticated} = useContext(LoginContext);
 
   useEffect(() => {
     if (!isSubmitting) {
@@ -128,15 +135,18 @@ export function CommentContainer({ boardId }) {
   }
 
   return (<Box>
-    <CommentForm
+    {isAuthenticated() && (
+        <CommentForm
+            boardId={boardId}
+            isSubmitting={isSubmitting}
+            onSubmit={handleSubmit}
+        />
+    )}
+    <CommentList
         boardId={boardId}
         isSubmitting={isSubmitting}
-        onSubmit={handleSubmit}
-    />
-    <CommentList boardId={boardId}
-                 isSubmitting={isSubmitting}
-                 commentList={commentList}
-                 onDeleteModalOpen={handleDeleteModalOpen}/>
+        commentList={commentList}
+        onDeleteModalOpen={handleDeleteModalOpen}/>
 
     {/*삭제 모달*/}
     <Modal isOpen={isOpen} onClose={onClose}>
