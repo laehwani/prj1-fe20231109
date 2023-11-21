@@ -19,10 +19,11 @@ import {
   Textarea,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {DeleteIcon} from "@chakra-ui/icons";
 import {LoginContext} from "./LogInProvider";
+import {current} from "immer";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
   const [comment, setComment] = useState("");
@@ -81,7 +82,11 @@ export function CommentContainer({ boardId }) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [commentList, setCommentList] = useState([]);
-  const [id, setId] = useState(0);
+  // const [id, setId] = useState(0);
+
+  //TODO: useRef 컴포넌트는 렌더링을 필요치 않은 즉, 임시로 값을 저장하는 용도의 컴포넌트를 원할 때 쓴다.
+  // 하지만 위에 특별한 상황이 아니면 주석처리한 useState 를 써도 상관은 없다..퍼포먼스용..
+  const commentIdRef = useRef(0);
 
   const {
     isOpen,
@@ -114,7 +119,9 @@ export function CommentContainer({ boardId }) {
 
   function handleDeleteModalOpen(id) {
     // id 를 어딘가 저장
-    setId(id);
+    // setId(id);
+    commentIdRef.current = id;
+
     // 모달 열기
     onOpen()
   }
@@ -126,7 +133,7 @@ export function CommentContainer({ boardId }) {
 
     setIsSubmitting(true);
     axios
-    .delete("/api/comment/" + id)
+    .delete("/api/comment/" + commentIdRef.current)
     .finally(() => {
       onClose();
       setIsSubmitting(false)
