@@ -17,7 +17,7 @@ import {
   StackDivider,
   Text,
   Textarea,
-  useDisclosure,
+  useDisclosure, useToast,
 } from "@chakra-ui/react";
 import React, {useContext, useEffect, useRef, useState} from "react";
 import axios from "axios";
@@ -96,6 +96,8 @@ export function CommentContainer({ boardId }) {
 
   const {isAuthenticated} = useContext(LoginContext);
 
+  const toast = useToast();
+
   useEffect(() => {
     if (!isSubmitting) {
       const params = new URLSearchParams();
@@ -109,11 +111,24 @@ export function CommentContainer({ boardId }) {
     }
   }, [isSubmitting]);
 
+
   function handleSubmit(comment) {
     setIsSubmitting(true);
 
     axios
     .post("/api/comment/add", comment)
+    .then(()=> {
+      toast({
+        description: '댓글이 등록되었습니다!',
+        status: 'success'
+      })
+    })
+    .catch((error)=> {
+      toast({
+        description: '댓글 등록 중 문제가 발생하였습니다.',
+        status: 'error'
+      })
+    })
     .finally(() => setIsSubmitting(false));
   }
 
@@ -129,11 +144,28 @@ export function CommentContainer({ boardId }) {
   // TODO: 지우는 중간에 submitting 상태를 변경시켜주기 위해 handleDelete를 컨테이너로 옮겼음.
   //  useEffect 가 submitting 상태에 따라서 변경되게 하기 위해..
   function handleDelete() {
-    // TODO : 모달, then, catch, finally 넣어야댐.
 
     setIsSubmitting(true);
     axios
     .delete("/api/comment/" + commentIdRef.current)
+    .then(()=> {
+      toast({
+        description: '댓글이 삭제되었습니다!',
+        status: 'success'
+      })
+    })
+    .catch((error)=> {
+      if (error.response.status === 401 || error.response.data === 403) {
+        toast({
+          description: '권한이 없습니다.', status: 'warning'
+        });
+      } else {
+        toast({
+          description: '댓글 삭제 중 문제가 발생하였습니다',
+          status: 'error'
+        })
+      }
+    })
     .finally(() => {
       onClose();
       setIsSubmitting(false)
