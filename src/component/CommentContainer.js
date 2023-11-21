@@ -42,19 +42,45 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
   );
 }
 
-function CommentItem({comment, onDeleteModalOpen}) {
+function CommentItem({comment, onDeleteModalOpen, setIsSubmitting, isSubmitting}) {
 
   const [isEditing, setIsEditing] = useState(false);
   const [commentEdited, setCommentEdited] = useState(comment.comment);
 
   const {hasAccess} = useContext(LoginContext);
 
+  const toast = useToast();
+
   function handleSubmit() {
+    //TODO: 저장 실행시 textarea 닫기..저장시 refresh도 완료..
+    //TODO: 응답 코드에 따른 기능들 마감.. 완료...
+    setIsSubmitting(true);
     axios
     .put("/api/comment/edit", {id: comment.id, comment: commentEdited})
-    .then(()=> console.log('good'))
-    .catch(()=> console.log('bad'))
-    .finally(()=> console.log('done!'))
+    .then(()=> {
+      toast({
+        description: '댓글이 수정되었습니다!',
+        status: 'success'
+      })
+    })
+    .catch((error)=> {
+      if (error.response.status === 401 || error.response.status === 403) {
+        toast({
+          description: '권한이 없습니다.',
+          status: 'warning'
+        });
+      }
+      if (error.response.status === 400) {
+        toast({
+          description: '잘못된 입력입니다. 다시 확인해주세요!',
+          status: 'warning'
+        });
+      }
+    })
+    .finally(()=> {
+      setIsSubmitting(false);
+      setIsEditing(false);
+    })
   }
 
   return (
@@ -75,7 +101,9 @@ function CommentItem({comment, onDeleteModalOpen}) {
                             onChange={(e) =>
                                 setCommentEdited(e.target.value)}
                   />
-                  <Button colorScheme='green' onClick={handleSubmit}>저장</Button>
+                  <Button colorScheme='green' onClick={handleSubmit} isDisabled={isSubmitting}>
+                    저장
+                  </Button>
                 </Box>
             )}
           </Box>
@@ -108,7 +136,7 @@ function CommentItem({comment, onDeleteModalOpen}) {
       </Box>);
 }
 
-function CommentList({ commentList, onDeleteModalOpen, isSubmitting}) {
+function CommentList({ commentList, onDeleteModalOpen, isSubmitting, setIsSubmitting}) {
 
   const {hasAccess} = useContext(LoginContext);
 
@@ -122,6 +150,8 @@ function CommentList({ commentList, onDeleteModalOpen, isSubmitting}) {
             {commentList.map((comment) => (
                 <CommentItem
                     key={comment.id}
+                    isSubmitting={isSubmitting}
+                    setIsSubmitting={setIsSubmitting}
                     comment={comment}
                     onDeleteModalOpen={onDeleteModalOpen}
                 />
@@ -237,6 +267,7 @@ export function CommentContainer({ boardId }) {
     <CommentList
         boardId={boardId}
         isSubmitting={isSubmitting}
+        setIsSubmitting={setIsSubmitting}
         commentList={commentList}
         onDeleteModalOpen={handleDeleteModalOpen}/>
 
