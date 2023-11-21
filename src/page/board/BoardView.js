@@ -97,7 +97,7 @@ export function BoardView() {
         <ModalFooter>
           <Button onClick={onClose}>닫기</Button>
           <Button onClick={handleDelete} colorScheme="red">
-            삭제하기
+            삭제
           </Button>
         </ModalFooter>
       </ModalContent>
