@@ -4,8 +4,10 @@ import axios from "axios";
 import {
   Box,
   Button,
+  Flex,
   FormControl,
   FormLabel,
+  Heading,
   Input,
   Modal,
   ModalBody,
@@ -20,6 +22,8 @@ import {
 } from "@chakra-ui/react";
 import {LoginContext} from "../../component/LogInProvider";
 import {CommentContainer} from "../../component/CommentContainer";
+import {faHeart} from "@fortawesome/free-regular-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 export function BoardView() {
   const { id } = useParams();
@@ -57,34 +61,48 @@ export function BoardView() {
       .finally(() => onClose());
   }
 
-  return (<Box>
-    <h1>{board.id}번 글 보기</h1>
-    <FormControl>
-      <FormLabel>제목</FormLabel>
-      <Input value={board.title} readOnly/>
-    </FormControl>
-    <FormControl>
-      <FormLabel>본문</FormLabel>
-      <Input value={board.content} readOnly/>
-    </FormControl>
-    <FormControl>
-      <FormLabel>작성자</FormLabel>
-      <Input value={board.nickName} readOnly/>
-    </FormControl>
-    <FormControl>
-      <FormLabel>작성일시</FormLabel>
-      <Input value={board.inserted} readOnly/>
-    </FormControl>
+  function handleLike() {
+    axios
+    .post("/api/like", {boardId : board.id})
+    .then(()=> console.log('good'))
+    .catch(()=> console.log('bad'))
+    .finally(()=> console.log('done!'))
+  }
 
-    {(hasAccess(board.writer) || isAdmin()) && (
-        <Box>
-          <Button colorScheme="yellow"
-                  onClick={() => navigate("/edit/" + id)}>수정</Button>
-          <Button colorScheme="blue" onClick={onOpen}>
-            삭제
+  return (
+      <Box>
+        <Flex>
+          <Heading size="xl">{board.id}번 글 보기</Heading>
+          <Button variant="ghost" >
+            <FontAwesomeIcon icon={faHeart} size="xl" onClick={handleLike}/>
           </Button>
-        </Box>
-    )}
+        </Flex>
+        <FormControl>
+          <FormLabel>제목</FormLabel>
+          <Input value={board.title} readOnly/>
+        </FormControl>
+        <FormControl>
+          <FormLabel>본문</FormLabel>
+          <Input value={board.content} readOnly/>
+        </FormControl>
+        <FormControl>
+          <FormLabel>작성자</FormLabel>
+          <Input value={board.nickName} readOnly/>
+        </FormControl>
+        <FormControl>
+          <FormLabel>작성일시</FormLabel>
+          <Input value={board.inserted} readOnly/>
+        </FormControl>
+
+        {(hasAccess(board.writer) || isAdmin()) && (
+            <Box>
+              <Button colorScheme="yellow"
+                      onClick={() => navigate("/edit/" + id)}>수정</Button>
+              <Button colorScheme="blue" onClick={onOpen}>
+                삭제
+              </Button>
+            </Box>
+        )}
 
     {/*삭제 모달*/}
     <Modal isOpen={isOpen} onClose={onClose}>
