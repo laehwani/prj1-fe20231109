@@ -17,13 +17,13 @@ import {
   StackDivider,
   Text,
   Textarea,
-  useDisclosure, useToast,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import React, {useContext, useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {DeleteIcon} from "@chakra-ui/icons";
 import {LoginContext} from "./LogInProvider";
-import {current} from "immer";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
   const [comment, setComment] = useState("");
@@ -42,6 +42,34 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
   );
 }
 
+function CommentItem({comment, onDeleteModalOpen}) {
+
+  const {hasAccess} = useContext(LoginContext);
+
+  return (
+      <Box>
+        <Flex justifyContent="space-between">
+          <Heading size="xs">{comment.memberId}</Heading>
+          <Text fontSize="xs">{comment.inserted}</Text>
+        </Flex>
+        <Flex justifyContent="space-between" textAlign="center">
+          <Text sx={{whiteSpace: "pre-wrap"}} pt="2" fontSize="sm">
+            {/*TODO: sx={{whiteSpace:"pre-wrap"} 로 댓글에 새로운 줄 출력*/}
+
+            {comment.comment}
+          </Text>
+          {hasAccess(comment.memberId) && (
+              <Button size='xs'
+                      colorScheme="green"
+                      onClick={()=> onDeleteModalOpen(comment.id)}>
+                <DeleteIcon/>
+              </Button>
+          )}
+        </Flex>
+      </Box>
+  );
+}
+
 function CommentList({ commentList, onDeleteModalOpen, isSubmitting}) {
 
   const {isAuthenticated, hasAccess} = useContext(LoginContext);
@@ -52,27 +80,13 @@ function CommentList({ commentList, onDeleteModalOpen, isSubmitting}) {
     </CardHeader>
     <CardBody>
       <Stack divider={<StackDivider/>} spacing="4">
-        {commentList.map((comment) => (<Box key={comment.id}>
-          <Flex justifyContent="space-between">
-            <Heading size="xs">{comment.memberId}</Heading>
-            <Text fontSize="xs">{comment.inserted}</Text>
-          </Flex>
-          <Flex justifyContent="space-between" textAlign="center">
-            <Text sx={{whiteSpace: "pre-wrap"}} pt="2" fontSize="sm">
-              {/*TODO: sx={{whiteSpace:"pre-wrap"} 로 댓글에 새로운 줄 출력*/}
-
-              {comment.comment}
-            </Text>
-            {hasAccess(comment.memberId) && (
-                <Button size='xs'
-                        colorScheme="green"
-                        onClick={()=> onDeleteModalOpen(comment.id)}
-                        isDisabled={isSubmitting}>
-                  <DeleteIcon/>
-                </Button>
-            )}
-          </Flex>
-        </Box>))}
+        {commentList.map((comment) => (
+            <CommentItem
+                key={comment.id}
+                comment={comment}
+                onDeleteModalOpen={onDeleteModalOpen}
+            />
+        ))}
       </Stack>
     </CardBody>
   </Card>);
