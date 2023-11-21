@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Th,
-  Thead,
-  Tr,
-  Spinner,
-  Td,
-  Table,
-  Tbody,
+  Box, Th, Thead, Tr, Spinner, Td, Table, Tbody, Badge,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {ChatIcon} from "@chakra-ui/icons";
 
 export function BoardList() {
   const [boardList, setBoardList] = useState(null);
@@ -25,37 +19,45 @@ export function BoardList() {
   }
 
   return (
-    <Box>
-      <h1>게시물 목록</h1>
       <Box>
-        <Table>
-          <Thead>
-            <Tr>
-              <Th>id</Th>
-              <Th>title</Th>
-              <Th>by</Th>
-              <Th>at</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {boardList.map((board) => (
-              <Tr
-                _hover={{
-                  cursor: "pointer",
-                }}
-                key={board.id}
-                onClick={() => navigate("/board/" + board.id)}
-              >
-                <Td>{board.id}</Td>
-                <Td>{board.title}</Td>
-                <Td>{board.content}</Td>
-                <Td>{board.nickName}</Td>
-                <Td>{board.inserted}</Td>
+        <h1>게시물 목록</h1>
+        <Box>
+          <Table>
+            <Thead>
+              <Tr>
+                <Th>id</Th>
+                <Th>title</Th>
+                <Th>by</Th>
+                <Th>at</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
+            </Thead>
+            <Tbody>
+              {boardList.map((board) => (
+                  <Tr
+                      _hover={{
+                        cursor: "pointer",
+                      }}
+                      key={board.id}
+                      onClick={() => navigate("/board/" + board.id)}
+                  >
+                    <Td>{board.id}</Td>
+                    <Td>
+                      {board.title}
+                      {board.commentCount > 0 && (
+                          <Badge>
+                            <ChatIcon color="hotpink"/>
+                            {board.commentCount}
+                          </Badge>
+                      )}
+                    </Td>
+                    <Td>{board.content}</Td>
+                    <Td>{board.nickName}</Td>
+                    <Td>{board.inserted}</Td>
+                  </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </Box>
       </Box>
-    </Box>
   );
 }
