@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import {DeleteIcon} from "@chakra-ui/icons";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
   const [comment, setComment] = useState("");
@@ -33,30 +34,38 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
 
 function CommentList({ commentList }) {
 
-  return (
-      <Card>
+  function handleDelete(id) {
+
+    // TODO : then, catch, finally 넣어야댐. 백엔드부터 하겟음.
+    axios.delete("/api/comment/" + id);
+  }
+
+  return (<Card>
         <CardHeader>
           <Heading size="md">댓글 리스트</Heading>
         </CardHeader>
         <CardBody>
-          <Stack divider={<StackDivider />} spacing="4">
-            {commentList.map((comment) => (
-                <Box key={comment.id}>
+          <Stack divider={<StackDivider/>} spacing="4">
+            {commentList.map((comment) => (<Box key={comment.id}>
                   <Flex justifyContent="space-between">
                     <Heading size="xs">{comment.memberId}</Heading>
                     <Text fontSize="xs">{comment.inserted}</Text>
                   </Flex>
-                  <Text sx={{ whiteSpace: "pre-wrap" }} pt="2" fontSize="sm">
-                    {/*TODO: sx={{whiteSpace:"pre-wrap"} 로 댓글에 새로운 줄 출력*/}
-                    
-                    {comment.comment}
-                  </Text>
-                </Box>
-            ))}
+                  <Flex justifyContent="space-between" textAlign="center">
+                    <Text sx={{whiteSpace: "pre-wrap"}} pt="2" fontSize="sm">
+                      {/*TODO: sx={{whiteSpace:"pre-wrap"} 로 댓글에 새로운 줄 출력*/}
+
+                      {comment.comment}
+                    </Text>
+                    <Button size='xs' colorScheme="green"
+                            onClick={()=> handleDelete(comment.id)}>
+                      <DeleteIcon/>
+                    </Button>
+                  </Flex>
+                </Box>))}
           </Stack>
         </CardBody>
-      </Card>
-  );
+      </Card>);
 }
 
 export function CommentContainer({ boardId }) {
