@@ -16,18 +16,42 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Spinner,
+  Spinner, Tooltip,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import {LoginContext} from "../../component/LogInProvider";
 import {CommentContainer} from "../../component/CommentContainer";
-import {faHeart} from "@fortawesome/free-regular-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { faHeart as emptyHeart } from "@fortawesome/free-regular-svg-icons";
+import { faHeart as fullHeart } from "@fortawesome/free-solid-svg-icons";
+
+function LikeContainer({ like, onClick }) {
+  const { isAuthenticated } = useContext(LoginContext);
+
+  if (like === null) {
+    return <Spinner />;
+  }
+
+  return (
+      <Flex gap={2}>
+        <Tooltip isDisabled={isAuthenticated()} hasArrow label={"로그인 하세요."}>
+          <Button variant="ghost" size="xl" onClick={onClick}>
+            {like.like && <FontAwesomeIcon icon={fullHeart} size="xl" />}
+            {like.like || <FontAwesomeIcon icon={emptyHeart} size="xl" />}
+          </Button>
+        </Tooltip>
+        <Heading size="lg">{like.countLike}</Heading>
+      </Flex>
+  );
+}
 
 export function BoardView() {
   const { id } = useParams();
-  const [board, setBoard] = useState("");
+
+  const [board, setBoard] = useState(null);
+  const [like, setLike] = useState(null);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const navigate = useNavigate();
@@ -35,7 +59,14 @@ export function BoardView() {
   const {hasAccess, isAdmin} = useContext(LoginContext);
 
   useEffect(() => {
-    axios.get("/api/board/id/" + id).then((r) => setBoard(r.data));
+    axios.get("/api/board/id/" + id)
+    .then((r) => setBoard(r.data));
+  }, []);
+
+  useEffect(() => {
+    axios
+    .get("/api/like/board/" + id)
+    .then((r) => setLike(r.data));
   }, []);
 
   if (board === null) {
@@ -71,11 +102,9 @@ export function BoardView() {
 
   return (
       <Box>
-        <Flex>
+        <Flex justifyContent="space-between">
           <Heading size="xl">{board.id}번 글 보기</Heading>
-          <Button variant="ghost" >
-            <FontAwesomeIcon icon={faHeart} size="xl" onClick={handleLike}/>
-          </Button>
+          <LikeContainer like={like} onClick={handleLike} />
         </Flex>
         <FormControl>
           <FormLabel>제목</FormLabel>
