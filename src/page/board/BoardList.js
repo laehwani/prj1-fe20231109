@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {
-  Badge, Box, Button, Spinner, Table, Tbody, Td, Th, Thead, Tr,
+  Badge, Box, Button, Flex, Input, Spinner, Table, Tbody, Td, Th, Thead, Tr,
 } from "@chakra-ui/react";
 import axios from "axios";
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
@@ -52,6 +52,27 @@ function Pagination({ pageInfo }) {
             </Button>
         )}
       </Box>
+  );
+}
+
+function SearchComponent() {
+  const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
+
+  function handleSearch() {
+
+    // /?k=keyword
+    const params = new URLSearchParams();
+    params.set("k", keyword);
+
+    navigate("/?" + params);
+  }
+
+  return (
+      <Flex>
+        <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+        <Button onClick={handleSearch}>검색</Button>
+      </Flex>
   );
 }
 
@@ -120,6 +141,7 @@ export function BoardList() {
           </Table>
         </Box>
 
+        <SearchComponent />
         <Pagination pageInfo={pageInfo} />
       </Box>
   );
