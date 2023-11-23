@@ -3,7 +3,7 @@ import {
   Box, Th, Thead, Tr, Spinner, Td, Table, Tbody, Badge, Button,
 } from "@chakra-ui/react";
 import axios from "axios";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import {ChatIcon} from "@chakra-ui/icons";
 import {faHeart} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -15,7 +15,7 @@ export function BoardList() {
   const [params] = useSearchParams();
 
   const navigate = useNavigate();
-
+  const location = useLocation();
   useEffect(() => {
     axios
     .get("/api/board/list?" + params)
@@ -23,7 +23,7 @@ export function BoardList() {
       setBoardList(response.data.boardList);
       setPageInfo(response.data.pageInfo);
     });
-  }, [params]);
+  }, [location]);
 
   if (boardList === null) {
     return <Spinner />;
