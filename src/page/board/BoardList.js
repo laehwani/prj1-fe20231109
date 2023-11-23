@@ -5,7 +5,10 @@ import {
 import axios from "axios";
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import {ChatIcon} from "@chakra-ui/icons";
-import {faHeart} from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleLeft, faAngleRight,
+  faHeart
+} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 function Pagination({ pageInfo }) {
@@ -16,16 +19,38 @@ function Pagination({ pageInfo }) {
   for (let i = pageInfo.startPageNumber; i <= pageInfo.endPageNumber; i++) {
     pageNumbers.push(i);
   }
-  console.log(pageNumbers);
-  console.log(pageInfo);
 
   return (
       <Box>
+        {pageInfo.prevPageNumber && (
+            <Button
+                variant="ghost"
+                onClick={() => navigate("/?p=" + pageInfo.prevPageNumber)}
+            >
+              <FontAwesomeIcon icon={faAngleLeft} />
+            </Button>
+        )}
+
         {pageNumbers.map((pageNumber) => (
-            <Button key={pageNumber} onClick={() => navigate("/?p=" + pageNumber)}>
+            <Button
+                key={pageNumber}
+                variant={
+                  pageNumber === pageInfo.currentPageNumber ? "solid" : "ghost"
+                }
+                onClick={() => navigate("/?p=" + pageNumber)}
+            >
               {pageNumber}
             </Button>
         ))}
+
+        {pageInfo.nextPageNumber && (
+            <Button
+                variant="ghost"
+                onClick={() => navigate("/?p=" + pageInfo.nextPageNumber)}
+            >
+              <FontAwesomeIcon icon={faAngleRight} />
+            </Button>
+        )}
       </Box>
   );
 }
