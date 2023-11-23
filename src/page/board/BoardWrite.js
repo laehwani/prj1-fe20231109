@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   Box,
   Button,
-  FormControl,
+  FormControl, FormHelperText,
   FormLabel,
   Input,
   Textarea,
@@ -75,6 +75,9 @@ export function BoardWrite() {
               multiple
               onChange={(e) => setFiles(e.target.files)}
           />
+          <FormHelperText>
+            한 개 파일은 1MB 이내, 총 용량은 10MB 이내로 첨부해 주세요.
+          </FormHelperText>
         </FormControl>
         <Button
           isDisabled={isSubmitting}
