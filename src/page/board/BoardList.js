@@ -10,12 +10,15 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 export function BoardList() {
   const [boardList, setBoardList] = useState(null);
+
+  const [params] = useSearchParams();
+
   const navigate = useNavigate();
 
   useEffect(() => {
     axios
-    .get("/api/board/list")
-    .then((r) => setBoardList(r.data));
+    .get("/api/board/list?" + params)
+    .then((response) => setBoardList(response.data));
   }, []);
 
   if (boardList === null) {
