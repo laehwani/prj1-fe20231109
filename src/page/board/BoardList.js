@@ -6,10 +6,26 @@ import axios from "axios";
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import {ChatIcon} from "@chakra-ui/icons";
 import {
-  faAngleLeft, faAngleRight,
-  faHeart
+  faAngleLeft, faAngleRight, faHeart
 } from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+
+function PageButton({ variant, pageNumber, children }) {
+
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+
+  function handleClick() {
+    params.set("p", pageNumber);
+    navigate("/?" + params);
+  }
+
+  return (
+      <Button variant={variant} onClick={handleClick}>
+        {children}
+      </Button>
+  );
+}
 
 function Pagination({ pageInfo }) {
   const pageNumbers = [];
@@ -23,33 +39,27 @@ function Pagination({ pageInfo }) {
   return (
       <Box>
         {pageInfo.prevPageNumber && (
-            <Button
-                variant="ghost"
-                onClick={() => navigate("/?p=" + pageInfo.prevPageNumber)}
-            >
+            <PageButton variant="ghost" pageNumber={pageInfo.prevPageNumber}>
               <FontAwesomeIcon icon={faAngleLeft} />
-            </Button>
+            </PageButton>
         )}
 
         {pageNumbers.map((pageNumber) => (
-            <Button
+            <PageButton
                 key={pageNumber}
                 variant={
                   pageNumber === pageInfo.currentPageNumber ? "solid" : "ghost"
                 }
-                onClick={() => navigate("/?p=" + pageNumber)}
+                pageNumber={pageNumber}
             >
               {pageNumber}
-            </Button>
+            </PageButton>
         ))}
 
         {pageInfo.nextPageNumber && (
-            <Button
-                variant="ghost"
-                onClick={() => navigate("/?p=" + pageInfo.nextPageNumber)}
-            >
+            <PageButton variant="ghost" pageNumber={pageInfo.nextPageNumber}>
               <FontAwesomeIcon icon={faAngleRight} />
-            </Button>
+            </PageButton>
         )}
       </Box>
   );
