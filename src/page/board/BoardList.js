@@ -13,7 +13,9 @@ export function BoardList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("/api/board/list").then((r) => setBoardList(r.data));
+    axios
+    .get("/api/board/list")
+    .then((r) => setBoardList(r.data));
   }, []);
 
   if (boardList === null) {
